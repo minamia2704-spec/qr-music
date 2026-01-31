@@ -1,107 +1,140 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>QR Music</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Music</title>
 
-<style>
-* {
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f2f2f2;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    }
 
-body {
-  margin: 0;
-  background: #f5f5f5;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    .player {
+      width: 92vw;              /* 👈 gần full màn hình điện thoại */
+      max-width: 420px;
+      background: #fff;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
 
-/* THẺ NHẠC */
-.card {
-  width: 90vw;
-  max-width: 380px;
-  background: #fff;
-  border-radius: 24px;
-  padding: 18px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  text-align: center;
-}
+    .cover {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      object-fit: cover;
+    }
 
-/* ẢNH */
-.cover {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 18px;
-}
+    .title {
+      margin-top: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
 
-/* TÊN NHẠC */
-h2 {
-  margin: 14px 0 4px;
-  font-size: 18px;
-}
+    .artist {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-/* CA SĨ */
-p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
 
-/* NÚT PLAY */
-.play-btn {
-  margin: 18px auto 6px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
+    .time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+    }
 
-.play-btn span {
-  color: white;
-  font-size: 26px;
-  margin-left: 4px;
-}
-</style>
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      background: #000;
+      color: #fff;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="card">
-  <img src="cover.jpg" class="cover">
+  <div class="player">
+    <img src="cover.jpg" class="cover">
 
-  <h2>Anh Muốn Nhìn Thấy Em</h2>
-  <p>Dangrangto</p>
+    <div class="title">Anh Muốn Nhìn Thấy Em</div>
+    <div class="artist">Dangrangto</div>
 
-  <div class="play-btn" onclick="togglePlay()">
-    <span id="icon">▶</span>
+    <input type="range" id="progress" value="0">
+
+    <div class="time">
+      <span id="current">0:00</span>
+      <span id="duration">0:00</span>
+    </div>
+
+    <div class="controls">
+      <button onclick="seek(-10)">⏪</button>
+      <button onclick="toggle()">⏯</button>
+      <button onclick="seek(10)">⏩</button>
+    </div>
+
+    <audio id="audio" src="music.mp3"></audio>
   </div>
 
-  <audio id="audio">
-    <source src="song.mp3" type="audio/mpeg">
-  </audio>
-</div>
-
 <script>
-const audio = document.getElementById("audio");
-const icon = document.getElementById("icon");
+  const audio = document.getElementById("audio");
+  const progress = document.getElementById("progress");
+  const current = document.getElementById("current");
+  const duration = document.getElementById("duration");
 
-function togglePlay() {
-  if (audio.paused) {
-    audio.play();
-    icon.textContent = "❚❚";
-  } else {
-    audio.pause();
-    icon.textContent = "▶";
+  audio.onloadedmetadata = () => {
+    progress.max = audio.duration;
+    duration.textContent = format(audio.duration);
+  };
+
+  audio.ontimeupdate = () => {
+    progress.value = audio.currentTime;
+    current.textContent = format(audio.currentTime);
+  };
+
+  progress.oninput = () => {
+    audio.currentTime = progress.value;
+  };
+
+  function toggle() {
+    audio.paused ? audio.play() : audio.pause();
   }
-}
+
+  function seek(sec) {
+    audio.currentTime += sec;
+  }
+
+  function format(t) {
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60).toString().padStart(2, "0");
+    return ${m}:${s};
+  }
 </script>
 
 </body>
