@@ -3,107 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Card</title>
+<title>QR Music</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#f2f2f2;
-  font-family:-apple-system,BlinkMacSystemFont;
+body {
+  margin: 0;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.player{
-  width:92%;
-  max-width:360px;
-  background:#fff;
-  border-radius:28px;
-  padding:18px;
-  box-shadow:0 25px 60px rgba(0,0,0,.18);
+.player {
+  width: 92%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
 }
 
-.cover{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:22px;
+.cover {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 18px;
+  object-fit: cover;
 }
 
-h2{
-  margin:14px 0 2px;
-  text-align:center;
-  font-size:19px;
-}
-p{
-  margin:0;
-  text-align:center;
-  font-size:14px;
-  color:#777;
+.title {
+  margin-top: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
 }
 
-/* progress */
-.progress-wrap{margin-top:16px}
-.time{
-  display:flex;
-  justify-content:space-between;
-  font-size:12px;
-  color:#555;
-}
-.progress{
-  height:4px;
-  background:#d6d6d6;
-  border-radius:10px;
-  margin-top:6px;
-  position:relative;
-}
-.bar{
-  height:100%;
-  width:0%;
-  background:#000;
-  border-radius:10px;
-}
-.dot{
-  width:14px;
-  height:14px;
-  background:#000;
-  border-radius:50%;
-  position:absolute;
-  top:50%;
-  transform:translate(-50%,-50%);
-  left:0%;
+.artist {
+  text-align: center;
+  color: #777;
+  margin-bottom: 12px;
 }
 
-/* controls */
-.controls{
-  margin-top:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:36px;
+.time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #555;
 }
 
-.icon{
-  font-size:28px;
-  border:none;
-  background:none;
-  cursor:pointer;
+input[type=range] {
+  width: 100%;
+  margin: 6px 0 14px;
+  accent-color: black;
 }
 
-.play{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  color:#fff;
-  box-shadow:0 10px 20px rgba(0,0,0,.35);
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+}
+
+.btn {
+  width: 44px;
+  height: 44px;
+  background: black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.btn.play {
+  width: 64px;
+  height: 64px;
+}
+
+.btn.play img {
+  width: 26px;
+  height: 26px;
 }
 </style>
 </head>
@@ -113,76 +97,74 @@ p{
 <div class="player">
   <img src="cover.jpg" class="cover">
 
-  <h2>Anh Muốn Nhìn Thấy Em</h2>
-  <p>Dangrangto</p>
+  <div class="title">Anh Muốn Nhìn Thấy Em</div>
+  <div class="artist">Dangrangto</div>
 
-  <div class="progress-wrap">
-    <div class="time">
-      <span id="current">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
-    <div class="progress" id="progress">
-      <div class="bar" id="bar"></div>
-      <div class="dot" id="dot"></div>
-    </div>
+  <div class="time">
+    <span id="current">0:00</span>
+    <span id="duration">0:00</span>
   </div>
+
+  <input type="range" id="progress" value="0">
 
   <div class="controls">
-    <button class="icon" id="back">⏪</button>
-    <button class="play" id="play">▶</button>
-    <button class="icon" id="forward">⏩</button>
-  </div>
+    <div class="btn" onclick="seek(-10)">
+      <img src="back.svg">
+    </div>
 
-  <audio id="audio" src="music.mp3"></audio>
+    <div class="btn play" onclick="togglePlay()">
+      <img id="playIcon" src="play.svg">
+    </div>
+
+    <div class="btn" onclick="seek(10)">
+      <img src="forward.svg">
+    </div>
+  </div>
 </div>
+
+<audio id="audio"
+src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
 <script>
 const audio = document.getElementById("audio");
-const play = document.getElementById("play");
-const bar = document.getElementById("bar");
-const dot = document.getElementById("dot");
+const progress = document.getElementById("progress");
+const playIcon = document.getElementById("playIcon");
 const current = document.getElementById("current");
 const duration = document.getElementById("duration");
-const progress = document.getElementById("progress");
 
-function format(t){
-  const m=Math.floor(t/60);
-  const s=Math.floor(t%60);
-  return m+":"+(s<10?"0"+s:s);
-}
-
-audio.onloadedmetadata=()=>{
-  duration.textContent=format(audio.duration);
-}
-
-play.onclick=()=>{
-  if(audio.paused){
+function togglePlay() {
+  if (audio.paused) {
     audio.play();
-    play.textContent="⏸";
-    update();
-  }else{
+    playIcon.src = "pause.svg";
+  } else {
     audio.pause();
-    play.textContent="▶";
+    playIcon.src = "play.svg";
   }
 }
 
-function update(){
-  if(!audio.paused){
-    const p=(audio.currentTime/audio.duration)*100;
-    bar.style.width=p+"%";
-    dot.style.left=p+"%";
-    current.textContent=format(audio.currentTime);
-    requestAnimationFrame(update);
-  }
+audio.addEventListener("loadedmetadata", () => {
+  progress.max = audio.duration;
+  duration.textContent = format(audio.duration);
+});
+
+audio.addEventListener("timeupdate", () => {
+  progress.value = audio.currentTime;
+  current.textContent = format(audio.currentTime);
+});
+
+progress.addEventListener("input", () => {
+  audio.currentTime = progress.value;
+});
+
+function seek(sec) {
+  audio.currentTime += sec;
 }
 
-progress.onclick=e=>{
-  const rect=progress.getBoundingClientRect();
-  audio.currentTime=((e.clientX-rect.left)/rect.width)*audio.duration;
+function format(t) {
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  return m + ":" + (s < 10 ? "0" : "") + s;
 }
-
-back.onclick=()=>audio.currentTime=Math.max(0,audio.currentTime-10);
-forward.onclick=()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10);
 </script>
 
 </body>
