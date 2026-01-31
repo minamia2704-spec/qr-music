@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>QR Music Player</title>
+  <meta charset="UTF-8" />
+  <title>QR Music</title>
 
   <style>
     body {
@@ -15,40 +15,44 @@
       font-family: Arial, sans-serif;
     }
 
-    .card {
-      background: #fff;
-      width: 280px;
-      padding: 20px;
+    .player {
+      width: 260px;
+      background: white;
       border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
     .cover {
       width: 100%;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      max-height: 320px;
+      object-fit: contain;   /* QUAN TRỌNG */
+      border-radius: 10px;
+      background: #eee;
     }
 
     h3 {
-      margin: 6px 0 2px;
+      margin: 12px 0 4px;
+      font-size: 16px;
     }
 
     p {
-      margin: 0 0 12px;
+      margin: 0;
       color: #666;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     audio {
       width: 100%;
+      margin-top: 12px;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <img src="cover.jpg" class="cover">
+  <div class="player">
+    <img src="cover.jpg" alt="Cover" class="cover">
 
     <h3>Anh Muốn Nhìn Thấy Em</h3>
     <p>Dangrangto</p>
@@ -60,5 +64,3 @@
 
 </body>
 </html>
-Đã gửi
-Viết cho Kiều Khanh
