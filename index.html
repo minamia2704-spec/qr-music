@@ -2,15 +2,63 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>QR Music</title>
+  <title>QR Music Player</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f2f2f2;
+      font-family: Arial, sans-serif;
+    }
+
+    .card {
+      background: #fff;
+      width: 280px;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .cover {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      margin: 6px 0 2px;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    audio {
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h1>🎵 QR Music Player</h1>
-  <p>Nếu bạn thấy dòng này là GitHub Pages đã chạy ✅</p>
 
-  <audio controls autoplay>
-    <source src="./song.mp3" type="audio/mpeg">
-    Trình duyệt không hỗ trợ audio.
-  </audio>
+  <div class="card">
+    <img src="cover.jpg" class="cover">
+
+    <h3>Anh Muốn Nhìn Thấy Em</h3>
+    <p>Dangrangto</p>
+
+    <audio controls>
+      <source src="song.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
 </body>
 </html>
+Đã gửi
+Viết cho Kiều Khanh
