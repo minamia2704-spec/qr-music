@@ -2,53 +2,68 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Music</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Music Player</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background: #f2f2f2;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .player {
-      width: 92vw;              /* 👈 gần full màn hình điện thoại */
+      width: 92vw;              /* vừa màn hình điện thoại */
       max-width: 420px;
       background: #fff;
-      border-radius: 22px;
-      padding: 20px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.15);
     }
 
     .cover {
       width: 100%;
       aspect-ratio: 1 / 1;
-      border-radius: 16px;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
 
-    .title {
+    .info {
+      text-align: center;
       margin-top: 14px;
+    }
+
+    .title {
       font-size: 18px;
       font-weight: 600;
-      text-align: center;
     }
 
     .artist {
       font-size: 14px;
-      color: #666;
-      text-align: center;
-      margin-bottom: 10px;
+      color: #777;
+      margin-top: 2px;
     }
 
-    input[type="range"] {
+    .progress {
+      margin-top: 14px;
+    }
+
+    .progress input {
       width: 100%;
-      margin: 10px 0;
     }
 
     .time {
@@ -56,6 +71,7 @@
       justify-content: space-between;
       font-size: 12px;
       color: #666;
+      margin-top: 4px;
     }
 
     .controls {
@@ -63,79 +79,97 @@
       justify-content: center;
       align-items: center;
       gap: 22px;
-      margin-top: 14px;
+      margin-top: 18px;
     }
 
-    button {
-      border: none;
-      background: #000;
-      color: #fff;
+    .btn {
       width: 56px;
       height: 56px;
       border-radius: 50%;
+      border: none;
+      background: #000;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .btn.small {
+      width: 46px;
+      height: 46px;
       font-size: 18px;
+      background: #222;
     }
   </style>
 </head>
 
 <body>
-
   <div class="player">
-    <img src="cover.jpg" class="cover">
+    <div class="cover">
+      <img src="cover.jpg" alt="cover">
+    </div>
 
-    <div class="title">Anh Muốn Nhìn Thấy Em</div>
-    <div class="artist">Dangrangto</div>
+    <div class="info">
+      <div class="title">Anh Muốn Nhìn Thấy Em</div>
+      <div class="artist">Dangrangto</div>
+    </div>
 
-    <input type="range" id="progress" value="0">
-
-    <div class="time">
-      <span id="current">0:00</span>
-      <span id="duration">0:00</span>
+    <div class="progress">
+      <input type="range" id="seek" value="0">
+      <div class="time">
+        <span id="current">0:00</span>
+        <span id="duration">0:00</span>
+      </div>
     </div>
 
     <div class="controls">
-      <button onclick="seek(-10)">⏪</button>
-      <button onclick="toggle()">⏯</button>
-      <button onclick="seek(10)">⏩</button>
+      <button class="btn small" onclick="skip(-10)">⏪</button>
+      <button class="btn" onclick="togglePlay()">▶</button>
+      <button class="btn small" onclick="skip(10)">⏩</button>
     </div>
 
-    <audio id="audio" src="music.mp3"></audio>
+    <audio id="audio" src="song.mp3"></audio>
   </div>
 
-<script>
-  const audio = document.getElementById("audio");
-  const progress = document.getElementById("progress");
-  const current = document.getElementById("current");
-  const duration = document.getElementById("duration");
+  <script>
+    const audio = document.getElementById("audio");
+    const seek = document.getElementById("seek");
+    const playBtn = document.querySelector(".btn");
+    const current = document.getElementById("current");
+    const duration = document.getElementById("duration");
 
-  audio.onloadedmetadata = () => {
-    progress.max = audio.duration;
-    duration.textContent = format(audio.duration);
-  };
+    function format(t) {
+      const m = Math.floor(t / 60);
+      const s = Math.floor(t % 60);
+      return m + ":" + (s < 10 ? "0" : "") + s;
+    }
 
-  audio.ontimeupdate = () => {
-    progress.value = audio.currentTime;
-    current.textContent = format(audio.currentTime);
-  };
+    audio.onloadedmetadata = () => {
+      seek.max = audio.duration;
+      duration.textContent = format(audio.duration);
+    };
 
-  progress.oninput = () => {
-    audio.currentTime = progress.value;
-  };
+    audio.ontimeupdate = () => {
+      seek.value = audio.currentTime;
+      current.textContent = format(audio.currentTime);
+    };
 
-  function toggle() {
-    audio.paused ? audio.play() : audio.pause();
-  }
+    seek.oninput = () => {
+      audio.currentTime = seek.value;
+    };
 
-  function seek(sec) {
-    audio.currentTime += sec;
-  }
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = "⏸";
+      } else {
+        audio.pause();
+        playBtn.textContent = "▶";
+      }
+    }
 
-  function format(t) {
-    const m = Math.floor(t / 60);
-    const s = Math.floor(t % 60).toString().padStart(2, "0");
-    return ${m}:${s};
-  }
-</script>
-
+    function skip(sec) {
+      audio.currentTime += sec;
+    }
+  </script>
 </body>
 </html>
