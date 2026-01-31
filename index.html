@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Player</title>
+<title>Music Card</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
   height:100vh;
@@ -17,35 +18,35 @@ body{
 }
 
 .player{
-  width:90%;
-  max-width:380px;
+  width:92%;
+  max-width:360px;
   background:#fff;
-  border-radius:26px;
-  padding:20px;
-  box-shadow:0 20px 50px rgba(0,0,0,.18);
+  border-radius:28px;
+  padding:18px;
+  box-shadow:0 25px 60px rgba(0,0,0,.18);
 }
 
 .cover{
   width:100%;
   aspect-ratio:1/1;
   object-fit:cover;
-  border-radius:20px;
+  border-radius:22px;
 }
 
 h2{
+  margin:14px 0 2px;
   text-align:center;
-  margin:16px 0 4px;
-  font-size:20px;
+  font-size:19px;
 }
 p{
-  text-align:center;
   margin:0;
-  color:#777;
+  text-align:center;
   font-size:14px;
+  color:#777;
 }
 
 /* progress */
-.progress-wrap{ margin-top:18px; }
+.progress-wrap{margin-top:16px}
 .time{
   display:flex;
   justify-content:space-between;
@@ -78,31 +79,32 @@ p{
 
 /* controls */
 .controls{
-  margin-top:26px;
+  margin-top:22px;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   gap:36px;
 }
 
-.icon-btn{
-  background:none;
+.icon{
+  font-size:28px;
   border:none;
+  background:none;
   cursor:pointer;
 }
 
-.play-btn{
-  width:74px;
-  height:74px;
+.play{
+  width:70px;
+  height:70px;
   border-radius:50%;
   background:#000;
   display:flex;
-  justify-content:center;
   align-items:center;
-  box-shadow:0 8px 18px rgba(0,0,0,.35);
+  justify-content:center;
+  font-size:30px;
+  color:#fff;
+  box-shadow:0 10px 20px rgba(0,0,0,.35);
 }
-svg{ fill:#000 }
-.play-btn svg{ fill:#fff }
 </style>
 </head>
 
@@ -116,8 +118,8 @@ svg{ fill:#000 }
 
   <div class="progress-wrap">
     <div class="time">
-      <span id="cur">0:00</span>
-      <span id="dur">0:00</span>
+      <span id="current">0:00</span>
+      <span id="duration">0:00</span>
     </div>
     <div class="progress" id="progress">
       <div class="bar" id="bar"></div>
@@ -126,77 +128,58 @@ svg{ fill:#000 }
   </div>
 
   <div class="controls">
-    <!-- back -->
-    <button class="icon-btn" id="back">
-      <svg width="28" height="28" viewBox="0 0 24 24">
-        <polygon points="11,12 20,18 20,6"/>
-        <polygon points="4,12 13,18 13,6"/>
-      </svg>
-    </button>
-
-    <!-- play -->
-    <button class="play-btn" id="play">
-      <svg id="icon" width="26" height="26" viewBox="0 0 24 24">
-        <rect x="6" y="4" width="4" height="16"/>
-        <rect x="14" y="4" width="4" height="16"/>
-      </svg>
-    </button>
-
-    <!-- forward -->
-    <button class="icon-btn" id="forward">
-      <svg width="28" height="28" viewBox="0 0 24 24">
-        <polygon points="4,6 4,18 13,12"/>
-        <polygon points="11,6 11,18 20,12"/>
-      </svg>
-    </button>
+    <button class="icon" id="back">⏪</button>
+    <button class="play" id="play">▶</button>
+    <button class="icon" id="forward">⏩</button>
   </div>
 
   <audio id="audio" src="music.mp3"></audio>
 </div>
 
 <script>
-const audio=document.getElementById("audio");
-const play=document.getElementById("play");
-const icon=document.getElementById("icon");
-const bar=document.getElementById("bar");
-const dot=document.getElementById("dot");
-const cur=document.getElementById("cur");
-const dur=document.getElementById("dur");
-const progress=document.getElementById("progress");
+const audio = document.getElementById("audio");
+const play = document.getElementById("play");
+const bar = document.getElementById("bar");
+const dot = document.getElementById("dot");
+const current = document.getElementById("current");
+const duration = document.getElementById("duration");
+const progress = document.getElementById("progress");
 
-const fmt=t=>{
+function format(t){
   const m=Math.floor(t/60);
   const s=Math.floor(t%60);
   return m+":"+(s<10?"0"+s:s);
-};
+}
 
-audio.onloadedmetadata=()=>dur.textContent=fmt(audio.duration);
+audio.onloadedmetadata=()=>{
+  duration.textContent=format(audio.duration);
+}
 
 play.onclick=()=>{
   if(audio.paused){
     audio.play();
-    icon.innerHTML=`<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
-    requestAnimationFrame(update);
+    play.textContent="⏸";
+    update();
   }else{
     audio.pause();
-    icon.innerHTML=`<polygon points="6,4 20,12 6,20"/>`;
+    play.textContent="▶";
   }
-};
+}
 
 function update(){
   if(!audio.paused){
-    const p=audio.currentTime/audio.duration*100;
+    const p=(audio.currentTime/audio.duration)*100;
     bar.style.width=p+"%";
     dot.style.left=p+"%";
-    cur.textContent=fmt(audio.currentTime);
+    current.textContent=format(audio.currentTime);
     requestAnimationFrame(update);
   }
 }
 
 progress.onclick=e=>{
-  const r=progress.getBoundingClientRect();
-  audio.currentTime=(e.clientX-r.left)/r.width*audio.duration;
-};
+  const rect=progress.getBoundingClientRect();
+  audio.currentTime=((e.clientX-rect.left)/rect.width)*audio.duration;
+}
 
 back.onclick=()=>audio.currentTime=Math.max(0,audio.currentTime-10);
 forward.onclick=()=>audio.currentTime=Math.min(audio.duration,audio.currentTime+10);
