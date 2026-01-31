@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Music Player</title>
+
+  <!-- Font Awesome icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      background: #ffffff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .player {
+      width: 320px;
+      padding: 20px;
+      border-radius: 18px;
+      border: 1.5px solid #e0e0e0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      text-align: center;
+      background: #fff;
+    }
+
+    .cover {
+      width: 318px;
+      height: 318px;
+      border-radius: 28px;
+      object-fit: cover;
+
+      margin: 32px auto 30px;
+      display: block
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .artist {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 6px 0 10px;
+      appearance: none;
+      height: 4px;
+      background: #ddd;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #000;
+      border-radius: 50%;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 22px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .play-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #000;
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="player">
+  <img src="./cover.jpg" class="cover">
+
+  <div class="title">Anh Muốn Nhìn Thấy Em</div>
+  <div class="artist">Dangrangto</div>
+
+  <div class="time">
+    <span id="current">0:00</span>
+    <span id="duration">0:26</span>
+  </div>
+
+  <input type="range" id="progress" value="0">
+
+  <div class="controls">
+    <button class="btn" onclick="backward()">
+      <i class="fas fa-backward"></i>
+    </button>
+
+    <button class="play-btn" onclick="togglePlay()">
+      <i id="icon" class="fas fa-play"></i>
+    </button>
+
+    <button class="btn" onclick="forward()">
+      <i class="fas fa-forward"></i>
+    </button>
+  </div>
+</div>
+
+<audio id="audio" src="./song.mp3"></audio>
+
+<script>
+  const audio = document.getElementById("audio");
+  const progress = document.getElementById("progress");
+  const icon = document.getElementById("icon");
+  const current = document.getElementById("current");
+  const duration = document.getElementById("duration");
+
+  function togglePlay() {
+    if (audio.paused) {
+      audio.play();
+      icon.className = "fas fa-pause";
+    } else {
+      audio.pause();
+      icon.className = "fas fa-play";
+    }
+  }
+
+  audio.addEventListener("loadedmetadata", () => {
+    duration.textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    progress.value = (audio.currentTime / audio.duration) * 100;
+    current.textContent = formatTime(audio.currentTime);
+  });
+
+  progress.addEventListener("input", () => {
+    audio.currentTime = (progress.value / 100) * audio.duration;
+  });
+
+  function backward() {
+    audio.currentTime -= 5;
+  }
+
+  function forward() {
+    audio.currentTime += 5;
+  }
+
+  function formatTime(time) {
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return m + ":" + (s < 10 ? "0" + s : s);
+  }
+</script>
+
+</body>
+</html>
